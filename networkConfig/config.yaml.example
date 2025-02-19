@@ -50,6 +50,6 @@ DLParameter:
 
   Training:
     batch_size: 64
-    timestemp: 50
+    timestep: 50
     loss_function: "MSELoss"
     device: "cuda"

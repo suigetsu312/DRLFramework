@@ -1,4 +1,4 @@
-class DRLTraner:
+class DRLTrainer:
 
     def __init__(self,
                  env,
@@ -8,12 +8,14 @@ class DRLTraner:
 
     def fit(self):
 
-        for step in range(self.agent.timestemp):
+        state = self.env.reset()
+
+        for step in range(self.agent.timestep):
 
             action = self.agent.choose_action(state)
             next_state, reward, done, _, _= self.env.step(action)
 
-            self.agent.train_step()
+            self.agent.train_step(step, state, action, reward, next_state, done)
             self.agent.update_epsilon(step)
 
             if done:
