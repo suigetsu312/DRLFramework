@@ -10,42 +10,46 @@ DLParameter:
       exploration_initial_eps: 1.0  # 初始探索率
       exploration_final_eps: 0.05  # 最低探索率
       exploration_fraction: 0.1  # 探索率衰減比例
-      action_space: 4  # 行動空間大小
-      observation_space: 4  # 觀察空間大小
+      action_space: [4]  # 行動空間大小
+      observation_space: [4]  # 觀察空間大小
+      reward_shape: [4] # 獎勵空間大小
+      termination_step: 1000  # 終止步數
+      target_update_freq: 1000  # 目標網路更新頻率
   Model:
-    layers:
-      - type: "Linear"
-        in_features: 4
-        out_features: 256
-        activation:
-          type: "ReLU"
-      - type: "Linear"
-        in_features: 4
-        out_features: 128
-        activation:
-          type : "LeakyReLU"
-          negative_slope: 0.01
-      - type: "Linear"
-        in_features: 4
-        out_features: 64
-        activation:
-          type: "Tanh"
-      - type: "Linear"
-        in_features: 64
-        out_features: 10
-        activation: 
-          type: "Identity"
-    dropout: 0.2
-
+    qnet:
+      layers:
+        - type: "Linear"
+          in_features: 4
+          out_features: 32
+          activation:
+            type: "ReLU"
+        - type: "Linear"
+          in_features: 32
+          out_features: 64
+          activation:
+            type : "ReLU"
+            negative_slope: 0.01
+        - type: "Linear"
+          in_features: 64
+          out_features: 64
+          activation:
+            type: "Tanh"
+        - type: "Linear"
+          in_features: 64
+          out_features: 10
+          activation: 
+            type: "Tanh"
+        
   Optimizer:
-    type: "Adam"
-    lr: 0.001
-    weight_decay: 1e-4
-    betas: [0.9, 0.999]
-    eps: 1e-8
+      qnet:
+        type: "Adam"
+        lr: 0.001
+        weight_decay: 1e-4
+        betas: [0.9, 0.999]
+        eps: 1e-8
 
   Training:
     batch_size: 64
-    epochs: 50
+    timestemp: 50
     loss_function: "MSELoss"
     device: "cuda"
