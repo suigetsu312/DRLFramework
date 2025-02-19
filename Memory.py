@@ -12,13 +12,7 @@ class CircularQueue:
         self.top = (self.top + 1) % self.size
         self.count += 1
         self.count = min(self.count, self.size)
-    
-    def sample(self, batch_size):
-        if self.count < batch_size:
-            return None
-        indices = np.random.choice(self.count, batch_size, replace=False)
-        return self.queue[indices]
-    
+        
 class ReplayBuffer:
     def __init__(self,
                  state_shape,
@@ -29,22 +23,26 @@ class ReplayBuffer:
         self.states = CircularQueue(max_size, state_shape)
         self.rewards = CircularQueue(max_size, reward_shape)    
         self.next_states = CircularQueue(max_size, state_shape)
+        self.dones = CircularQueue(max_size, state_shape)
 
     def add(self, state, action, reward, next_state):
         self.states.enqueue(state)
         self.actions.enqueue(action)
         self.rewards.enqueue(reward)
         self.next_states.enqueue(next_state)
+        self.dones.enqueue(next_state)
 
     def sample(self, batch_size):
-        self.states.sample(batch_size)
-        self.actions.sample(batch_size)
-        self.rewards.sample(batch_size)
-        self.next_states.sample(batch_size)
-        return (self.states.sample(batch_size),
-                self.actions.sample(batch_size),
-                self.rewards.sample(batch_size),
-                self.next_states.sample(batch_size))
+        if self.__len__() < batch_size:
+            return None
+
+        indices = np.random.choice(self.__len__(), batch_size, replace=False)
+
+        return (self.states[indices],
+                self.actions[indices],
+                self.rewards[indices],
+                self.next_states[indices],
+                self.dones.queue[indices])
     
     def __len__(self):
         return self.states.count
