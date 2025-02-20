@@ -69,8 +69,8 @@ class ModelFactory:
                 layers.append(nn.Flatten())
             elif layer_type == "Linear":
                 layers.append(MLP(
-                    in_channels=self.channelShape(layer_config["in_features"]),
-                    out_channels=self.channelShape(layer_config["out_features"]),
+                    in_features=self.channelShape(layer_config["in_features"]),
+                    out_features=self.channelShape(layer_config["out_features"]),
                     activation=ActivationFactory.create(layer_config["activation"])
                 ))
 
@@ -97,8 +97,11 @@ class TrainingFactory:
             "batch_size": config["Training"]["batch_size"],
             "timestep": config["Training"]["timestep"],
             "loss_function": config["Training"]["loss_function"],
-            "device": config["Training"]["device"]
+            "device": config["Training"]["device"],
+            "save_freq": config["Training"]["save_freq"]
+
         }
+    
 class LossFunctionFactory:
     @staticmethod
     def create(methodName: str):

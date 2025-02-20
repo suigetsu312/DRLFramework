@@ -3,53 +3,55 @@ DLParameter:
     type: "drl"  # 深度強化學習
     method: "dqn"  # 可切換 "ppo", "sac", "td3" 等
     DQN:  # DQN 專屬的超參數
-      replay_buffer_size: 100000
-      batch_sample_size: 64
+      replay_buffer_size: 5000
+      batch_sample_size: 32
       gamma: 0.99  # 折扣因子
       target_update: 1000  # 目標網路更新頻率
-      exploration_initial_eps: 1.0  # 初始探索率
-      exploration_final_eps: 0.05  # 最低探索率
-      exploration_fraction: 0.1  # 探索率衰減比例
+      exploration_initial_eps: 0.05  # 初始探索率
+      exploration_final_eps: 0.0  # 最低探索率
+      exploration_fraction: 0.0  # 探索率衰減比例
       action_space: [4]  # 行動空間大小
       observation_space: [4]  # 觀察空間大小
       reward_shape: [4] # 獎勵空間大小
-      termination_step: 1000  # 終止步數
-      target_update_freq: 1000  # 目標網路更新頻率
+      target_update_freq: 100  # 目標網路更新頻率
+
+      termination_step : 200
   Model:
     qnet:
       layers:
         - type: "Linear"
-          in_features: 4
-          out_features: 32
+          in_features: "StateShape"
+          out_features: 24
           activation:
             type: "ReLU"
         - type: "Linear"
-          in_features: 32
-          out_features: 64
+          in_features: 24
+          out_features: 24
           activation:
             type : "ReLU"
-            negative_slope: 0.01
         - type: "Linear"
-          in_features: 64
-          out_features: 64
+          in_features: 24
+          out_features: 24
           activation:
-            type: "Tanh"
+            type : "ReLU"
+
         - type: "Linear"
-          in_features: 64
-          out_features: 10
+          in_features: 24
+          out_features: "ActionShape"
           activation: 
-            type: "Tanh"
+            type: "Identity"
         
   Optimizer:
       qnet:
         type: "Adam"
         lr: 0.001
-        weight_decay: 1e-4
+        weight_decay: 1e-3
         betas: [0.9, 0.999]
         eps: 1e-8
 
   Training:
-    batch_size: 64
-    timestep: 50
+    batch_size: 32
+    timestep: 50000
     loss_function: "MSELoss"
     device: "cuda"
+    save_freq: 1000

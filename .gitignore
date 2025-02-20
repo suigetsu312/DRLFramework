@@ -1,2 +1,3 @@
 networkConfig/*.yaml
 __pycache__
+*.pth
