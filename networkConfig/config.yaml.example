@@ -4,39 +4,34 @@ DLParameter:
     method: "dqn"  # 可切換 "ppo", "sac", "td3" 等
     DQN:  # DQN 專屬的超參數
       replay_buffer_size: 5000
-      batch_sample_size: 32
+      batch_sample_size: 64
       gamma: 0.99  # 折扣因子
       target_update: 1000  # 目標網路更新頻率
       exploration_initial_eps: 0.05  # 初始探索率
       exploration_final_eps: 0.0  # 最低探索率
       exploration_fraction: 0.0  # 探索率衰減比例
       action_space: [4]  # 行動空間大小
-      observation_space: [4]  # 觀察空間大小
-      reward_shape: [4] # 獎勵空間大小
+      observation_space: [2]  # 觀察空間大小
+      reward_shape: [1] # 獎勵空間大小
       target_update_freq: 100  # 目標網路更新頻率
 
-      termination_step : 200
+      termination_step : 1000
   Model:
     qnet:
       layers:
         - type: "Linear"
           in_features: "StateShape"
-          out_features: 24
+          out_features: 32
           activation:
             type: "ReLU"
         - type: "Linear"
-          in_features: 24
-          out_features: 24
-          activation:
-            type : "ReLU"
-        - type: "Linear"
-          in_features: 24
-          out_features: 24
+          in_features: 32
+          out_features: 32
           activation:
             type : "ReLU"
 
         - type: "Linear"
-          in_features: 24
+          in_features: 32
           out_features: "ActionShape"
           activation: 
             type: "Identity"
@@ -50,8 +45,10 @@ DLParameter:
         eps: 1e-8
 
   Training:
-    batch_size: 32
+    batch_size: 64
     timestep: 50000
     loss_function: "MSELoss"
     device: "cuda"
-    save_freq: 1000
+    save_freq: 10000
+    save_path: "./results/"
+    exp_name: "DQNNavigation"

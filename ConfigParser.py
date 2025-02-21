@@ -98,8 +98,9 @@ class TrainingFactory:
             "timestep": config["Training"]["timestep"],
             "loss_function": config["Training"]["loss_function"],
             "device": config["Training"]["device"],
-            "save_freq": config["Training"]["save_freq"]
-
+            "save_freq": config["Training"]["save_freq"],
+            "save_path": config["Training"]["save_path"],
+            "exp_name": config["Training"]["exp_name"]
         }
     
 class LossFunctionFactory:

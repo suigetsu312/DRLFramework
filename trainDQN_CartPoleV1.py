@@ -45,14 +45,14 @@ if __name__ == "__main__":
     trainer = DRLTrainer(env, agent)
     trainer.fit()  # 開始訓練
 
-    trainer.save("./results/dqn_cartpole_full.pth")  # 儲存模型
+    trainer.save("./results/dqn_cartpole_full_1.pth")  # 儲存模型
 
-    checkpoint = torch.load("./results/dqn_cartpole_full.pth")
+    checkpoint = torch.load("./results/dqn_cartpole_full_1.pth")
     agent.qnet.load_state_dict(checkpoint["qnet"])
 
     # 測試模型
 
-    state = env.reset()
+    state, _ = env.reset()
     done = False
     step = 0
     acccumulated = 0

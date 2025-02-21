@@ -26,7 +26,7 @@ class DRLTrainer:
 
             if done:
                 epoch +=1
-                print(f"epoch {epoch} , {step} : accumulated reward : {accumulated}")
+                print(f"epoch {epoch} , {step}, {self.env.countOfReachingTarget}: accumulated reward : {accumulated}")
                 accumulated = 0
                 curEpoch_step = 0
                 state = self.env.reset()[0]

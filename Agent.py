@@ -6,6 +6,7 @@ import torch
 import numpy as np
 from typing import Dict
 import yaml
+import os
 # ==============================
 # 1. DRL Method Factory
 # ==============================
@@ -64,6 +65,10 @@ class DQNAgent(AgentBase):
         self.timestep = self.training_params["timestep"]
         self.batch_size = self.training_params["batch_size"]
         self.save_freq = self.training_params["save_freq"]
+        self.save_folder_name = self.training_params["save_path"]
+        self.exp_name = self.training_params["exp_name"]
+        self.save_path = os.path.join(self.save_folder_name, self.exp_name)
+        os.makedirs(self.save_path, exist_ok=True)
         self.qnet = ModelFactory(config["Model"]["qnet"],
                                  self.observation_space, 
                                 self.action_space).create_model()
@@ -81,7 +86,8 @@ class DQNAgent(AgentBase):
     def choose_action(self, state):
         if np.random.uniform(0,1) < 1 - self.epsilon:
             state = torch.tensor(state).to(self.device)
-            action = torch.argmax(self.qnet(state)).item()
+            actions = self.qnet(state)
+            action = torch.argmax(actions).item()
         else:
             action = np.random.choice(self.action_space)
         return action 
@@ -93,7 +99,7 @@ class DQNAgent(AgentBase):
             'optimizer': self.optimizer.state_dict(),
             'lr' : self.optimizer.param_groups[0]['lr'],
             'step' : step
-        }, path)
+        }, os.path.join(self.save_path, path))
 
     def update_epsilon(self, step):
         self.epsilon = max(self.epsilon_min, self.epsilon_init - (step/  self.timestep) * (self.epsilon_init - self.epsilon_min))
@@ -125,7 +131,7 @@ class DQNAgent(AgentBase):
             self.targetNet.load_state_dict(self.qnet.state_dict())
 
         if step % self.save_freq == 0:
-            self.save_weight(f"./results/dqn_cartpole_weight_{step}.pth", step)
+            self.save_weight(f"dqn_nav_weight_{step}.pth", step)
 
 if __name__ == "__main__":
     with open("./networkConfig/example.yaml", "r", encoding="utf-8") as file:
