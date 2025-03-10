@@ -13,7 +13,7 @@ class DRLTrainer:
         epoch = 0
         accumulated = 0
         curEpoch_step = 0
-        for step in range(self.agent.timestep):
+        for step in range(self.agent.timeStep):
             self.agent.update_epsilon(step)
             action = self.agent.choose_action(state)
             curEpoch_step += 1

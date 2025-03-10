@@ -1,4 +1,4 @@
-from Agent import AgentFactory, DQNAgent
+from Agent.Agent import AgentFactory, DQNAgent
 from Trainer import DRLTrainer
 import yaml
 import gymnasium as gym
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     trainer.save("./results/dqn_cartpole_full_1.pth")  # 儲存模型
 
     checkpoint = torch.load("./results/dqn_cartpole_full_1.pth")
-    agent.qnet.load_state_dict(checkpoint["qnet"])
+    agent.QNet.load_state_dict(checkpoint["qnet"])
 
     # 測試模型
 

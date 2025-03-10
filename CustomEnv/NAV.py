@@ -13,6 +13,13 @@ class Position:
     def distance(self, target):
         return np.sqrt((self.x - target.x)**2 + (self.y - target.y)**2)
     
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+    
 class States:
     
     def __init__(self,x,y,targetPosition, x_limit = 100, y_limit = 100):
@@ -23,10 +30,10 @@ class States:
         self.distanceWithTarget = (self.position.distance(targetPosition))
 
     def ToNumpy(self):
-        return np.array([self.position.x/self.x_limit,
-                         self.position.y/self.y_limit,
-                         self.targetPosition.x/self.x_limit,
-                         self.targetPosition.y/self.y_limit,
+        return np.array([self.position.x/self.x_limit/2,
+                         self.position.y/self.y_limit/2,
+                         self.targetPosition.x/self.x_limit/2,
+                         self.targetPosition.y/self.y_limit/2,
                          self.distanceWithTarget], np.float32)
 
 class NAV:
@@ -45,19 +52,34 @@ class NAV:
         self.map[self.target.x][self.target.y] = 1
         self.countOfReachingTarget = 0
         self.state = States(50, 50, self.target, self.x_limit, self.y_limit)
+        self.obstacle = [(70, 10), (80, 20), (25, 70), (20, 20)]
 
+        self.action_space = (4)
+        self.observation_space = (5)
     def step(self, action):
         reward = -1
         self.cur_step += 1
         done = False
         self.render()
-        if action == 0:
+        if   action == 0:
             self.state.position.x += 1
         elif action == 1:
             self.state.position.x -= 1
         elif action == 2:
             self.state.position.y += 1
         elif action == 3:
+            self.state.position.y -= 1
+        elif action == 4:
+            self.state.position.x -= 1
+            self.state.position.y -= 1
+        elif action == 5:
+            self.state.position.x += 1
+            self.state.position.y -= 1
+        elif action == 6:
+            self.state.position.x -= 1
+            self.state.position.y -= 1
+        elif action == 7:
+            self.state.position.x += 1
             self.state.position.y -= 1
 
         distanceWithTarget = (self.state.position.distance(self.state.targetPosition))
@@ -108,6 +130,7 @@ class NAV:
         img = np.zeros((self.x_limit, self.y_limit, 3), np.uint8)
         img[self.state.position.x][self.state.position.y] = [0, 255, 0]
         img[self.target.x][self.target.y] = [0, 0, 255]
+            
         img = cv2.resize(img, (500, 500), interpolation=cv2.INTER_NEAREST)
         cv2.imshow("NAV", img)
         cv2.waitKey(10)

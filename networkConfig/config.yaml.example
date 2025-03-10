@@ -5,7 +5,7 @@ DLParameter:
     DQN:  # DQN 專屬的超參數
       replay_buffer_size: 5000
       batch_sample_size: 64
-      gamma: 0.99  # 折扣因子
+      gamma: 0.95  # 折扣因子
       target_update: 1000  # 目標網路更新頻率
       exploration_initial_eps: 0.05  # 初始探索率
       exploration_final_eps: 0.0  # 最低探索率
