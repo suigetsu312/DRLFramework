@@ -2,7 +2,7 @@
 import math
 import torch
 import torch.nn as nn
-
+from Policy.QLinear import QLinearHead
 def _act(name: str, params=None):
     name = name.lower()
     params = params or {}
@@ -27,12 +27,6 @@ def _init(m: nn.Module, init_cfg: dict | None, bias_cfg: dict | None):
         if m.bias is not None and bias_cfg and "value" in bias_cfg:
             nn.init.constant_(m.bias, bias_cfg["value"])
 
-class QLinearHead(nn.Module):
-    def __init__(self, in_dim: int, out_actions: int, bias=True, init=None, bias_init=None):
-        super().__init__()
-        self.linear = nn.Linear(in_dim, out_actions, bias=bias)
-        _init(self.linear, init, bias_init)
-    def forward(self, feat): return self.linear(feat)
 
 def build_model_from_config(model_cfg: dict, obs_space, action_space) -> nn.Module:
     obs_format = model_cfg.get("obs_format", "vector")

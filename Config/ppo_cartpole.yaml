@@ -1,17 +1,71 @@
-Schema: rl.layered_head.v1
+# Config/ppo_cartpole.yaml
 Agent: { type: PPO }
-Env: { id: CartPole-v1, framestack: 1 }
+
+Env:
+  id: CartPole-v1
+  framestack: 1
+  reward_clip: null
+  time_limit: null
+  normalize_obs: false
 
 Model:
   obs_format: "vector"
   layers:
-    - { type: Linear, out_features: 128, bias: true }
+    - { type: Linear, out_features: 128, bias: true, init: { scheme: "xavier_uniform", gain: 1.0 } }
     - { type: Activation, name: ReLU }
     - { type: Linear, out_features: 128, bias: true }
     - { type: Activation, name: ReLU }
   head:
     type: Categorical
     params:
-      num_actions: auto   # 用 action_space.n
+      num_actions: auto           # 由 env.action_space.n 推斷
       bias: true
-      init: { scheme: xavier_uniform, gain: 1.0 }
+      init: { scheme: "xavier_uniform", gain: 1.0 }
+  init:
+    default: { scheme: "xavier_uniform", gain: 1.0 }
+    bias:    { value: 0.0 }
+
+DRL:
+  Params:
+    device: "auto"
+    seed: 42
+
+    # ===== PPO Hyper-params =====
+    gamma: 0.99
+    gae_lambda: 0.95
+    clip_range: 0.2               # ε in PPO-Clip
+    update_epochs: 4               # 每次 rollouts 完成後的訓練 epochs
+    minibatch_size: 64
+    rollout_steps: 2048            # 每個環境收集的步數（單環境時=整體步數）
+    vf_coef: 0.5
+    ent_coef: 0.01
+    max_grad_norm: 0.5
+    target_kl: null                # 例如 0.02；null 表示不啟用 early stop by KL
+    normalize_adv: true
+
+  Optimizer:
+    type: Adam
+    params: { lr: 0.0003, weight_decay: 0.0, eps: 1e-5 }
+
+  Scheduler: { type: null, params: {} }   # 需要的話可用 Cosine 等
+
+  # PPO 沒有 off-policy buffer；這裡留空或忽略
+  ReplayBuffer: { type: null, params: {} }
+
+  Loss:
+    type: PPOClip
+    params:
+      clip_range: null            # 若填，覆蓋 Params.clip_range
+      vf_clip_range: 0.2          # 可選：value clipping
+
+Logging:
+  log_interval: 10
+  eval_interval: 5000
+  num_eval_episodes: 5
+  save_interval: 20000
+  ckpt_dir: "checkpoints/run"
+  run_name: "run_ppo"
+
+Runner:
+  vector_envs: 1                  # 有多個平行環境時，rollout_steps 是每個 env 的長度
+  async: false
