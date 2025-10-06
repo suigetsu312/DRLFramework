@@ -63,7 +63,7 @@ Logging:
   eval_interval: 5000
   num_eval_episodes: 5
   save_interval: 20000
-  ckpt_dir: "checkpoints/run"
+  ckpt_dir: "checkpoints/pporun"
   run_name: "run_ppo"
 
 Runner:
