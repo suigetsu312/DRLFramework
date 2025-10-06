@@ -1,0 +1,7 @@
+**__pycache__
+checkpoints/
+.vscode/
+*.pyc
+.DS_Store
+runs/
+videos/

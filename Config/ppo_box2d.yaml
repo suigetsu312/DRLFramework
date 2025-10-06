@@ -1,0 +1,20 @@
+Schema: rl.layered_head.v1
+Agent: { type: PPO }
+Env: { id: HalfCheetah-v4, framestack: 1 }
+
+Model:
+  obs_format: "vector"
+  layers:
+    - { type: Linear, out_features: 256, bias: true }
+    - { type: Activation, name: Tanh }
+    - { type: Linear, out_features: 256, bias: true }
+    - { type: Activation, name: Tanh }
+  head:
+    type: Gaussian
+    params:
+      action_dim: auto         # 用 action_space.shape[0]
+      learn_log_std: true      # true: 用可學參數；false: 常數log_std
+      log_std_init: -0.5
+      tanh_squash: true        # 是否用 tanh 限幅（配合環境 action 範圍）
+      bias: true
+      init: { scheme: xavier_uniform, gain: 1.0 }

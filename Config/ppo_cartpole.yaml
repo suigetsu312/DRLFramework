@@ -1,0 +1,17 @@
+Schema: rl.layered_head.v1
+Agent: { type: PPO }
+Env: { id: CartPole-v1, framestack: 1 }
+
+Model:
+  obs_format: "vector"
+  layers:
+    - { type: Linear, out_features: 128, bias: true }
+    - { type: Activation, name: ReLU }
+    - { type: Linear, out_features: 128, bias: true }
+    - { type: Activation, name: ReLU }
+  head:
+    type: Categorical
+    params:
+      num_actions: auto   # 用 action_space.n
+      bias: true
+      init: { scheme: xavier_uniform, gain: 1.0 }

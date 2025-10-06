@@ -1,0 +1,62 @@
+# Config/dqn_cartpole.yaml
+Agent: { type: DQN }
+
+Env:
+  id: CartPole-v1
+  framestack: 1
+  reward_clip: null
+  time_limit: null
+  normalize_obs: false
+
+Model:
+  obs_format: "vector"
+  layers:
+    - { type: Linear, out_features: 128, bias: true, init: { scheme: "xavier_uniform", gain: 1.0 } }
+    - { type: Activation, name: ReLU }
+    - { type: Linear, out_features: 128, bias: true }
+    - { type: Activation, name: ReLU }
+  head:
+    type: QLinear
+    params:
+      out_actions: auto
+      bias: true
+      init: { scheme: "xavier_uniform", gain: 1.0 }
+  init:
+    default: { scheme: "xavier_uniform", gain: 1.0 }
+    bias:    { value: 0.0 }
+
+DRL:
+  Params:
+    gamma: 0.99
+    learning_rate: 0.0005
+    batch_size: 64
+    buffer_size: 50000
+    target_update_freq: 500
+    tau: null
+    double_dqn: true
+    n_step: 1
+    learning_starts: 1000
+    train_freq: 1
+    grad_accumulate: 1
+    max_grad_norm: 10
+    device: "cuda"
+    seed: 42
+
+  Exploration:
+    type: EpsilonGreedy
+    epsilon: { start: 1.0, end: 0.05, decay: 0.995, min: 0.01, warmup_steps: 0 }
+
+  ReplayBuffer: { type: Uniform, params: {} }
+  Optimizer:    { type: Adam, params: { lr: null, weight_decay: 0.0, amsgrad: false } }
+  Scheduler:    { type: null, params: {} }
+  Loss:         { type: Huber, params: { delta: 1.0 } }
+
+Logging:
+  log_interval: 10
+  eval_interval: 500
+  num_eval_episodes: 5
+  save_interval: 2000
+  ckpt_dir: "checkpoints/run"
+  run_name: "run_dqn"
+
+Runner: { vector_envs: 1, async: false }
