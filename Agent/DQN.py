@@ -7,7 +7,7 @@ import torch.optim as optim
 
 from Agent.Agent import AgentBase, Transition
 from Policy.Builder import build_model_from_config
-from Memory.replay import ReplayBuffer
+from Memory.Replay import ReplayBuffer
 from Utils.Scheduler import EpsilonGreedy
 from Agent.Registry import register_agent
 
